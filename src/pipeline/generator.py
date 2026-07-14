@@ -1,10 +1,70 @@
 import logging
+import re
+from typing import Optional
 from langchain_groq import ChatGroq
 from langchain_core.documents import Document
 from langchain_core.messages import SystemMessage, HumanMessage
 from src.config.prompts import SYSTEM_PROMPT, USER_PROMPT_TEMPLATE
 
 logger = logging.getLogger(__name__)
+
+def _extract_source_answer(query: str, retrieved_chunks: list[Document]) -> Optional[str]:
+    """
+    Return a concise source-only answer for common factual questions if the LLM is unavailable.
+    """
+    if not retrieved_chunks:
+        return None
+
+    query_lower = query.lower()
+    scheme_name = retrieved_chunks[0].metadata.get("scheme_name", "The scheme")
+    context = " ".join(chunk.page_content for chunk in retrieved_chunks)
+    context = " ".join(context.split())
+
+    def find(pattern: str) -> Optional[str]:
+        match = re.search(pattern, context, flags=re.IGNORECASE)
+        return match.group(1).strip(" .;") if match else None
+
+    if "expense ratio" in query_lower:
+        value = find(r"Expense ratio\s+([0-9.]+%)")
+        if value:
+            return f"{scheme_name}'s expense ratio is {value}."
+
+    if "sip" in query_lower:
+        value = find(r"Min\. for SIP\s+(\S+)")
+        if value:
+            return f"{scheme_name}'s minimum SIP amount is {value}."
+
+    if "nav" in query_lower:
+        value = find(r"NAV:\s+[^ ]+\s+[^ ]+\s+(\S+)")
+        if value:
+            return f"{scheme_name}'s latest NAV is {value}."
+
+    if "aum" in query_lower or "fund size" in query_lower:
+        value = find(r"Fund size \(AUM\)\s+(.+? Cr)")
+        if value:
+            return f"{scheme_name}'s fund size (AUM) is {value}."
+
+    if "exit load" in query_lower:
+        value = find(r"Exit load\s+(Exit load[^.]+[.])")
+        if value:
+            return f"{scheme_name}'s {value}"
+
+    if "benchmark" in query_lower:
+        value = find(r"Fund benchmark\s+(.+?)\s+Scheme Information")
+        if value:
+            return f"{scheme_name}'s benchmark is {value}."
+
+    if "fund manager" in query_lower or "manager" in query_lower:
+        value = find(r"([A-Z][A-Za-z .]+?)\s+is the Current Fund Manager")
+        if value:
+            return f"{scheme_name}'s current fund manager is {value}."
+
+    if "lock-in" in query_lower or "lock in" in query_lower or "lockin" in query_lower:
+        value = find(r"(?:Lock-in|Lock in|Lockin)\s+(.*?)(?:\.|;)")
+        if value:
+            return f"{scheme_name}'s lock-in information is: {value}."
+
+    return None
 
 def generate_answer(query: str, retrieved_chunks: list[Document]) -> str:
     """
@@ -69,4 +129,7 @@ def generate_answer(query: str, retrieved_chunks: list[Document]) -> str:
         logger.error(f"Error generating answer: {e}")
         import traceback
         traceback.print_exc()
-        return "I encountered a temporary issue while generating the answer. Please try again later."
+        source_answer = _extract_source_answer(query, retrieved_chunks)
+        if source_answer:
+            return source_answer
+        return "I found relevant source information, but the answer generator is temporarily unavailable. Please try a more specific factual question."
