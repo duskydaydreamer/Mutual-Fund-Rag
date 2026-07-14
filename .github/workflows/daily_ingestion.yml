@@ -10,6 +10,8 @@ jobs:
   ingest:
     name: Scrape, Embed & Update Vector Store
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
