@@ -29,7 +29,7 @@ graph TD
 
 ## 🛠️ Tech Stack
 - **Backend**: FastAPI, Python
-- **AI/LLM**: LangChain, Groq (Llama-3-70b-8192), HuggingFace (BAAI/bge-small-en-v1.5)
+- **AI/LLM**: LangChain, Groq (configurable via `LLM_MODEL`), HuggingFace (BAAI/bge-small-en-v1.5)
 - **Database**: ChromaDB (Vector Store)
 - **Frontend**: Next.js, React, TailwindCSS
 - **CI/CD**: GitHub Actions (for daily scheduled scraping)
@@ -48,6 +48,7 @@ graph TD
    ```bash
    cp .env.example .env
    # Add your GROQ_API_KEY to .env
+   # Optional: set LLM_MODEL=llama-3.1-8b-instant
    ```
 4. Run the data ingestion script (only needed once, as GitHub Actions does this daily):
    ```bash
