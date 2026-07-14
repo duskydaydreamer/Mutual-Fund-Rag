@@ -51,6 +51,7 @@ def generate_answer(query: str, retrieved_chunks: list[Document]) -> str:
 
         llm = ChatGroq(
             model=model_name,
+            groq_api_key=groq_api_key or None,
             temperature=0.0,
             max_tokens=200,
             max_retries=3, # Built-in exponential backoff for 429 errors
