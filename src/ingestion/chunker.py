@@ -14,7 +14,7 @@ import re
 from pathlib import Path
 from typing import Optional
 from langchain_core.documents import Document
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 logger = logging.getLogger(__name__)
 
