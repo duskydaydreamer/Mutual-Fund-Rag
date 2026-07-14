@@ -39,6 +39,10 @@ class QueryResponse(BaseModel):
     type: str
     refusal: bool = False
 
+@app.get("/")
+def health_check():
+    return {"status": "healthy", "service": "Mutual Fund RAG API"}
+
 @app.post("/api/chat", response_model=QueryResponse)
 def chat_endpoint(request: QueryRequest):
     logger.info(f"Received query: {request.query}")
