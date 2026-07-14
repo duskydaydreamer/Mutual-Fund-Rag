@@ -13,7 +13,7 @@ import logging
 import re
 from pathlib import Path
 from typing import Optional
-from langchain.schema import Document
+from langchain_core.documents import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 logger = logging.getLogger(__name__)
