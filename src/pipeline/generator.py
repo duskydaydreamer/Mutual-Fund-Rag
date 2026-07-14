@@ -45,6 +45,10 @@ def generate_answer(query: str, retrieved_chunks: list[Document]) -> str:
         
         import os
         model_name = os.environ.get("LLM_MODEL", "llama-3.3-70b-versatile")
+        groq_api_key = os.environ.get("GROQ_API_KEY", "").strip()
+        if groq_api_key:
+            os.environ["GROQ_API_KEY"] = groq_api_key
+
         llm = ChatGroq(
             model=model_name,
             temperature=0.0,
