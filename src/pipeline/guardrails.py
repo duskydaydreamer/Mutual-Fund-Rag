@@ -11,6 +11,9 @@ ADVISORY_KEYWORDS = [
     "should i", "which is better", "recommend", "suggest",
     "good fund", "best fund", "invest in", "compare",
     "worth investing", "better option", "which one",
+    "good investment", "which fund is better", "returns will i get",
+    "guarantee", "right time to buy", "should i buy", "time to invest",
+    "buy or sell"
 ]
 
 def detect_pii(query: str) -> bool:

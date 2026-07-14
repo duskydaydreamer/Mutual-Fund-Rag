@@ -52,7 +52,7 @@ SCHEMES_WITHOUT_OVERVIEW = {
 
 def clean_for_matching(text: str) -> str:
     text = text.lower()
-    for word in ['direct', 'growth', 'plan', 'fund']:
+    for word in ['direct', 'growth', 'plan', 'fund', 'prudential', 'fof', 'of']:
         text = text.replace(word, '')
     return " ".join(text.split())
 
