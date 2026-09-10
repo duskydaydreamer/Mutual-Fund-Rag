@@ -26,14 +26,15 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run ingestion pipeline
+      - name: Run data refresh pipeline
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           PYTHONPATH: .
-        run: python scripts/run_ingestion.py
+        run: python scripts/run_data_refresh.py
 
-      - name: Commit updated vectorstore
+      - name: Commit updated source data
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: daily vectorstore refresh"
-          file_pattern: "data/vectorstore/*"
+          commit_message: "chore: daily data refresh"
+          file_pattern: "data/raw/* data/processed/*"
+

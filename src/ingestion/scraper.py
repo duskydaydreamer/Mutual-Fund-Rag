@@ -146,7 +146,7 @@ def scrape_full_page_text(html: str) -> str:
     text = re.sub(r'\s+', ' ', text).strip()
     return text
 
-def scrape_all_schemes():
+def scrape_all_schemes(force_refresh: bool = False):
     """Iterates through all URLs and dumps scraped output into JSON files."""
     raw_dir = Path("data/raw")
     raw_dir.mkdir(parents=True, exist_ok=True)
@@ -157,7 +157,7 @@ def scrape_all_schemes():
         slug = get_url_slug(url)
         output_file = raw_dir / f"{slug}.json"
         
-        if output_file.exists():
+        if output_file.exists() and not force_refresh:
             logger.info(f"Skipping {slug}, already scraped.")
             continue
             
